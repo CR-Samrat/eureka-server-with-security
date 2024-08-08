@@ -2,31 +2,40 @@ package com.example.eureka_client_two.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 
+import com.example.eureka_client_two.dto.OrderDetailsDto;
+
 @RestController
+@RequestMapping("/restaurant")
 public class ClientController {
-    
-    @Autowired
-    private DiscoveryClient discoveryClient;
 
     @Autowired
     private RestClient.Builder restClientBuilder;
 
+    @Autowired
+    private ServiceInstance orderInstance;
+
     @GetMapping("/welcome")
     public String welcomeMessage(){
 
-        ServiceInstance serviceInstance = discoveryClient.getInstances("eureka-client-one").get(0);
+        return "Welcome to Restaurant service";
+    }
 
-        String response = restClientBuilder.build()
+    @GetMapping("/order-details/{id}")
+    public OrderDetailsDto getOrderDetails(@PathVariable("id") int id){
+
+        OrderDetailsDto response = restClientBuilder.build()
                                     .get()
-                                    .uri(serviceInstance.getUri()+"/welcome")
+                                    .uri(orderInstance.getUri()+"/orders/status/"+id)
                                     .retrieve()
-                                    .body(String.class);
+                                    .body(OrderDetailsDto.class);
 
         return response;
     }
+
 }

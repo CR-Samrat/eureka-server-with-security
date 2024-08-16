@@ -14,6 +14,6 @@ public class ServiceInstanceConfig {
     
     @Bean
     public ServiceInstance orderInstance(){
-        return discoveryClient.getInstances("eureka-client-one").get(0);
+        return discoveryClient.getInstances("order-service").get(0);
     }
 }

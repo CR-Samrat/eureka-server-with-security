@@ -49,4 +49,8 @@ public class ClientService {
 
         return order;
     }
+
+    public OrderDetailsDto getRandomOrder(){
+        return orders.get(new Random().nextInt(orders.size()));
+    }
 }

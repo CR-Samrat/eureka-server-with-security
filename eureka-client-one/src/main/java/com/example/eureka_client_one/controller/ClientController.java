@@ -32,4 +32,9 @@ public class ClientController {
     public OrderDetailsDto getOrderById(@PathVariable("id") int id){
         return this.clientService.getOrderById(id);
     }
+
+    @GetMapping("/send")
+    public OrderDetailsDto giveOrderToRestaurant(){
+        return this.clientService.getRandomOrder();
+    }
 }

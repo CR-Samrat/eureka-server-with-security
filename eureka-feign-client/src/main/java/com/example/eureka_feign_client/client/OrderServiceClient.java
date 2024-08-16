@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.eureka_feign_client.dto.OrderDetailsDto;
 
-@FeignClient(name = "eureka-client-one")
+@FeignClient(name = "order-service")
 public interface OrderServiceClient {
     
     @GetMapping("/orders")

@@ -1,5 +1,6 @@
 package com.example.eureka_client_two.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
@@ -29,14 +31,21 @@ public class ClientController {
     private RestaurantService restaurantService;
 
     @GetMapping("/welcome")
-    public String welcomeMessage(){
+    public String welcomeMessage(@RequestHeader("authorities") String authorities){
 
-        return "Welcome to Restaurant service";
+        if(authorities != null && Arrays.stream(authorities.split(",")).toList().contains("ROLE_USER")){
+            return "Welcome to Restaurant service";
+        }
+        throw new RuntimeException("Unauthorize user");
     }
 
     @GetMapping
-    public List<Restaurant> getAllRestaurants(){
-        return this.restaurantService.getRestaurants();
+    public List<Restaurant> getAllRestaurants(@RequestHeader("authorities") String authorities){
+
+        if(authorities != null && Arrays.stream(authorities.split(",")).toList().contains("ROLE_USER")){
+            return this.restaurantService.getRestaurants();
+        }
+        throw new RuntimeException("Unauthorize user");
     }
 
     @GetMapping("/{id}")

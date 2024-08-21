@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,22 +20,38 @@ public class ClientController {
     private ClientService clientService;
     
     @GetMapping("/welcome")
-    public String getWelcomeMessage(){
-        return "Welcome to Order service";
+    public String getWelcomeMessage(@RequestHeader("authorities") String authorities){
+
+        if(authorities != null && (authorities.contains("ROLE_USER") || authorities.contains("ROLE_ADMIN"))){
+            return "Welcome to Order service";
+        }
+        throw new RuntimeException("You are un authorize to use this service");
     }
 
     @GetMapping
-    public List<OrderDetailsDto> getAllOrders(){
-        return this.clientService.getOrders();
+    public List<OrderDetailsDto> getAllOrders(@RequestHeader("authorities") String authorities){
+
+        if(authorities != null && authorities.contains("ROLE_ADMIN")){
+            return this.clientService.getOrders();
+        }
+        throw new RuntimeException("You are un authorize to use this service");
     }
 
     @GetMapping("/status/{id}")
-    public OrderDetailsDto getOrderById(@PathVariable("id") int id){
-        return this.clientService.getOrderById(id);
+    public OrderDetailsDto getOrderById(@PathVariable("id") int id, @RequestHeader("authorities") String authorities){
+
+        if(authorities != null && (authorities.contains("ROLE_USER") || authorities.contains("ROLE_ADMIN"))){
+            return this.clientService.getOrderById(id);
+        }
+        throw new RuntimeException("You are un authorize to use this service");
     }
 
     @GetMapping("/send")
-    public OrderDetailsDto giveOrderToRestaurant(){
-        return this.clientService.getRandomOrder();
+    public OrderDetailsDto giveOrderToRestaurant(@RequestHeader("authorities") String authorities){
+
+        if(authorities != null && authorities.contains("ROLE_ADMIN")){
+            return this.clientService.getRandomOrder();
+        }
+        throw new RuntimeException("You are un authorize to use this service");
     }
 }
